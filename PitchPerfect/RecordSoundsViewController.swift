@@ -32,15 +32,15 @@ import AVFoundation
 
     //MARK: Actions
     @IBAction func recordAudio(_ sender: Any) {
-        recordingLabel.text = "Recording in progress"
-        stopRecordingButton.isEnabled = true
-        recordButton.isEnabled = false
+        //recordingLabel.text = "Recording in progress"
+        //stopRecordingButton.isEnabled = true
+        //recordButton.isEnabled = false
+        configureUI(true)
         
         let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
         let recordingName = "recordedVoice.wav"
         let pathArray = [dirPath, recordingName]
         let filePath = URL(string: pathArray.joined(separator: "/"))
-       // print(filePath)
         
         let session = AVAudioSession.sharedInstance()
         try! session.setCategory(AVAudioSession.Category.playAndRecord, mode: AVAudioSession.Mode.default, options: AVAudioSession.CategoryOptions.defaultToSpeaker)
@@ -53,15 +53,17 @@ import AVFoundation
     }
     
     @IBAction func stopRecording(_ sender: Any) {
-        recordingLabel.text = "Tap to Record"
-        stopRecordingButton.isEnabled = false
-        recordButton.isEnabled = true
+        //recordingLabel.text = "Tap to Record"
+        //stopRecordingButton.isEnabled = false
+        //recordButton.isEnabled = true
+        configureUI(false)
         
         audioRecorder.stop()
         let audioSession = AVAudioSession.sharedInstance()
         try! audioSession.setActive(false)
     }
  
+    // MARK: - Audio Recorder Delegate
     func audioRecorderDidFinishRecording(_ recoder: AVAudioRecorder, successfully flag: Bool) {
         if flag {
             performSegue(withIdentifier: "stopRecording", sender: audioRecorder.url)
@@ -77,6 +79,12 @@ import AVFoundation
             
             playSoundsVC.recordedAudioURL = recordedAudioURL
         }
+    }
+    
+    private func configureUI(_ isRecording: Bool) {
+        recordingLabel.text = isRecording ? "Recording in progress" : "Tap to Record"
+        recordButton.isEnabled = !isRecording
+        stopRecordingButton.isEnabled = isRecording
     }
 }
 
